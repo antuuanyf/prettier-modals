@@ -14,14 +14,20 @@
 <body>
 
     <div class="container">
-        <button onclick="prettyModal.open('dialog-1')">Abrir modal</button>
+        <button onclick="prettyModal.open('dialog-1', { anchor: 'origin' })">Abrir modal al origen</button>
+        <button onclick="prettyModal.open('dialog-2', { anchor: 'center' })">Abrir modal al centro</button>
     </div>
 
 
     
     <dialog id="dialog-1" >
-        <button onclick="prettyModal.close('dialog-1')">Cerrar</button>
-        <h1>Hola mundo abre modal</h1>
+        <button class="close-button" onclick="prettyModal.close('dialog-1')">Cerrar</button>
+        <h1>Modal abierto al origen</h1>
+    </dialog>
+
+    <dialog id="dialog-2" >
+        <button class="close-button" onclick="prettyModal.close('dialog-2')">Cerrar</button>
+        <h1>Modal abierto al centro</h1>
     </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js"></script>

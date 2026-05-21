@@ -14,16 +14,24 @@ export class PrettyModal {
         dialog.dataset.flipId = randomId
         origin.dataset.flipId = randomId
 
-        const originState = Flip.getState(origin)
-
+        const originState = Flip.getState(origin, {
+            props: "backgroundColor,borderRadius,color,borderColor"
+        })
         dialog.showModal()
+
+        const originRect = origin.getBoundingClientRect()
+        dialog.style.margin = '0'
+        dialog.style.position = 'fixed'
+        dialog.style.top = `${originRect.top}px`
+        dialog.style.left = `${originRect.left}px`
 
         Flip.from(originState, {
             targets: dialog,
             scale: true,
+            props: "backgroundColor,borderRadius,color,borderColor",
             ease: CustomEase.create("custom", "M0,0 C0.305,0.206 0.116,0.567 0.3,0.8 0.394,0.921 0.491,1 1,1"),
             toggleClass: 'pretty-modal-opening',
-            duration: 0.7,
+            duration: 0.4,
         })
 
     }
@@ -36,18 +44,21 @@ export class PrettyModal {
         const originId = dialog.dataset.flipId;
         const origin = document.querySelector(`[data-flip-id="${originId}"]:not([open])`)
 
-        const originState = Flip.getState(origin) 
+        const originState = Flip.getState(origin, {
+            props: "backgroundColor,borderRadius,color,borderColor"
+        })
         
         Flip.to(originState, {
             targets: dialog,
             scale: true,
+            props: "backgroundColor,borderRadius,color,borderColor",
             ease: CustomEase.create("custom", "M0,0 C0.305,0.206 0.116,0.567 0.3,0.8 0.394,0.921 0.491,1 1,1"),
             onComplete: () => {
                 dialog.setAttribute("style", "")
                 dialog.close()
             },
             toggleClass: 'pretty-modal-closing',
-            duration: 0.7,  
+            duration: 0.4,
         })
 
         
@@ -75,6 +86,11 @@ export class PrettyModal {
                     pretty-modal-closing-fade 700ms cubic-bezier(.56,.27,0,1)
                 ;
             }
+
+            dialog.pretty-modal-opening,
+            dialog[open] {
+                margin: 0;
+            }
             
             @keyframes pretty-modal-closing-border-radius {
                 to { border-radius:400px; }
@@ -88,6 +104,28 @@ export class PrettyModal {
                 from { opacity: 1; } to { opacity: 0; }
             }
 
+            dialog[open]::backdrop {
+                background: rgba(0,0,0,0.2);
+                backdrop-filter: blur(4px);
+            }
+
+            dialog.pretty-modal-opening::backdrop {
+                animation: pretty-modal-backdrop-in 400ms cubic-bezier(.56,.27,0,1);
+            }
+
+            dialog.pretty-modal-closing::backdrop {
+                animation: pretty-modal-backdrop-out 400ms cubic-bezier(.56,.27,0,1) forwards;
+            }
+
+            @keyframes pretty-modal-backdrop-in {
+                from { background: rgba(0,0,0,0); backdrop-filter: blur(0px); }
+                to   { background: rgba(0,0,0,0.2); backdrop-filter: blur(4px); }
+            }
+
+            @keyframes pretty-modal-backdrop-out {
+                from { background: rgba(0,0,0,0.2); backdrop-filter: blur(4px); }
+                to   { background: rgba(0,0,0,0); backdrop-filter: blur(0px); }
+            }
         `;
 
         const styleSheet = document.createElement('style');

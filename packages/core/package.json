@@ -1,0 +1,49 @@
+{
+  "name": "pretty-modal",
+  "version": "0.1.0",
+  "description": "Beautiful open/close animations for native <dialog> elements, powered by GSAP Flip.",
+  "type": "module",
+  "main": "./dist/PrettyModal.cjs",
+  "module": "./dist/PrettyModal.js",
+  "types": "./dist/PrettyModal.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/PrettyModal.d.ts",
+      "import": "./dist/PrettyModal.js",
+      "require": "./dist/PrettyModal.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "modal",
+    "dialog",
+    "gsap",
+    "flip",
+    "animation",
+    "vanilla"
+  ],
+  "author": "srdavo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/srdavo/pretty-modal.git"
+  },
+  "peerDependencies": {
+    "gsap": ">=3.12"
+  },
+  "devDependencies": {
+    "gsap": "^3.15.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0"
+  }
+}

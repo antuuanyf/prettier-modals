@@ -1,0 +1,15 @@
+{
+  "name": "pretty-modal-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Monorepo for Pretty Modal — vanilla core + Angular wrapper.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "build:core": "npm run build -w pretty-modal",
+    "build:angular": "npm run build -w pretty-modal-angular"
+  },
+  "license": "MIT"
+}

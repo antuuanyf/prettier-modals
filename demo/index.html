@@ -4,35 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pretty Modal Demo</title>
-    <link rel="stylesheet">
-
-    
 
     <link rel="stylesheet" href="./style.css">
+
+    <script type="importmap">
+    {
+        "imports": {
+            "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.14.1/all.js/+esm",
+            "gsap/Flip": "https://cdn.jsdelivr.net/npm/gsap@3.14.1/all.js/+esm",
+            "gsap/CustomEase": "https://cdn.jsdelivr.net/npm/gsap@3.14.1/all.js/+esm"
+        }
+    }
+    </script>
     <script src="./main.js" type="module"></script>
 </head>
 <body>
 
     <div class="container">
-        <button onclick="prettyModal.open('dialog-1', { anchor: 'origin' })">Abrir modal al origen</button>
-        <button onclick="prettyModal.open('dialog-2', { anchor: 'center' })">Abrir modal al centro</button>
+        <button onclick="prettyModal.open('dialog-1', { trigger: this, anchor: 'origin' })">Abrir modal al origen</button>
+        <button onclick="prettyModal.open('dialog-2', { trigger: this, anchor: 'center' })">Abrir modal al centro</button>
     </div>
 
-
-    
-    <dialog id="dialog-1" >
+    <dialog id="dialog-1">
         <button class="close-button" onclick="prettyModal.close('dialog-1')">Cerrar</button>
         <h1>Modal abierto al origen</h1>
     </dialog>
 
-    <dialog id="dialog-2" >
+    <dialog id="dialog-2">
         <button class="close-button" onclick="prettyModal.close('dialog-2')">Cerrar</button>
         <h1>Modal abierto al centro</h1>
     </dialog>
 
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/Flip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js" ></script>
-    
 </body>
 </html>

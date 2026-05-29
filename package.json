@@ -9,7 +9,15 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "build:core": "npm run build -w pretty-modal",
-    "build:angular": "npm run build -w pretty-modal-angular"
+    "build:angular": "npm run build -w pretty-modal-angular",
+    "demo:angular": "npm --prefix demos/angular start",
+    "build:demo:angular": "npm --prefix demos/angular run build",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "playwright test"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "http-server": "^14.1.1"
+  }
 }

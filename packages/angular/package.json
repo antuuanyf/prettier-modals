@@ -19,7 +19,9 @@
     "directory": "packages/angular"
   },
   "scripts": {
-    "build": "ng-packagr -p ng-package.json"
+    "build": "ng-packagr -p ng-package.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "peerDependencies": {
     "@angular/common": ">=17",
@@ -32,12 +34,16 @@
   },
   "devDependencies": {
     "@angular/common": "^19.2.0",
-    "@angular/compiler": "^19.2.0",
+    "@angular/compiler": "^19.2.24",
     "@angular/compiler-cli": "^19.2.0",
     "@angular/core": "^19.2.0",
+    "@angular/platform-browser": "^19.2.24",
+    "@angular/platform-browser-dynamic": "^19.2.24",
+    "jsdom": "^29.1.1",
     "ng-packagr": "^19.2.0",
     "rxjs": "^7.8.0",
     "typescript": "~5.8.0",
+    "vitest": "^4.1.7",
     "zone.js": "^0.15.0"
   },
   "sideEffects": false

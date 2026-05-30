@@ -1,4 +1,4 @@
-# AGENTS.md — Pretty Modal
+# AGENTS.md — Prettier Modals
 
 Rules and conventions for agents (and humans) working in this repo.
 
@@ -7,7 +7,7 @@ Rules and conventions for agents (and humans) working in this repo.
 - **From now on: branches + PRs to `main`.** Do **not** commit directly to `main`.
   - Branch from up-to-date `main`: `git switch -c <type>/<short-desc>` (e.g. `feat/angular-demo`, `test/core-vitest`, `fix/...`).
   - Open a PR to `main` with `gh pr create`. Keep PRs focused.
-- Remotes: `origin` = `antuuanyf/pretty-modal` (push here), `upstream` = `srdavo/pretty-modal`.
+- Remote: `origin` = `antuuanyf/prettier-modals` (push here). Standalone repo — not a fork.
 - Commit only when asked. End commit messages with the `Co-Authored-By: Claude …` trailer.
 - Never commit `dist/` or `node_modules/` (both git-ignored). Builds happen at publish time.
 
@@ -16,11 +16,12 @@ Rules and conventions for agents (and humans) working in this repo.
 npm workspaces:
 
 ```
-packages/core/      → pretty-modal           (vanilla core, tsup)
-packages/angular/   → pretty-modal-angular   (Angular wrapper, ng-packagr)
+packages/core/      → prettier-modals          (vanilla core, tsup)
+packages/angular/   → prettier-modals-angular  (Angular wrapper, ng-packagr)
 demo/               → vanilla demo (no build; served over HTTP)
-docs/               → planning docs
 ```
+
+> `docs/` holds local-only planning notes — it's git-ignored and not pushed.
 
 ### Build
 
@@ -46,7 +47,7 @@ npm run build          # both
 - Run GSAP animations with `NgZone.runOutsideAngular`; emit outputs back inside the zone (`zone.run`).
 - Browser-only: instantiate the core lazily behind `isPlatformBrowser`.
 - ng-packagr auto-discovers `tsconfig.json` (not `tsconfig.lib.json`) in the package dir; compiles Ivy **partial** mode.
-- Keep `@angular/*` and `pretty-modal` external in the FESM bundle.
+- Keep `@angular/*` and `prettier-modals` external in the FESM bundle.
 
 ## Demo (no bundler)
 
@@ -55,8 +56,8 @@ npm run build          # both
 
 ## Verifying animations
 
-The animation is the product — verify it for real, not just unit-mocked. Pattern used here: static server + headless Chrome via CDP (Node has a global `WebSocket`), sample `getComputedStyle` over time. Automate as Playwright e2e (see `docs/next-steps-plan.md`).
+The animation is the product — verify it for real, not just unit-mocked. Pattern used here: static server + headless Chrome via CDP (Node has a global `WebSocket`), sample `getComputedStyle` over time. Automate as Playwright e2e (see the local `docs/` planning notes).
 
 ## Publishing
 
-Publish `pretty-modal` first, then `pretty-modal-angular` (it peer-depends on the core). Bump versions together.
+Publish `prettier-modals` first, then `prettier-modals-angular` (it peer-depends on the core). Bump versions together.

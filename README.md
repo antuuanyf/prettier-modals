@@ -47,16 +47,15 @@ npm install /path/to/artifacts/prettier-modals-0.1.0.tgz \
 
 ### From a GitHub Release (no local checkout needed)
 
-Prefer a URL anyone can install from? Create a Release and attach the tarballs:
+Prefer a URL anyone can install from? Releases are built automatically. Pushing a `v*` tag triggers the [release workflow](.github/workflows/release.yml), which runs `pack:all` and attaches both tarballs to the matching GitHub Release:
 
-1. Run `npm run pack:all` to produce the two `.tgz` in `artifacts/`.
-2. Create a release tagged `v0.1.0` and upload both files as assets:
-   ```bash
-   gh release create v0.1.0 \
-     artifacts/prettier-modals-0.1.0.tgz \
-     artifacts/prettier-modals-angular-0.1.0.tgz \
-     --title "v0.1.0" --notes "Pre-npm release. Install the attached tarballs."
-   ```
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+# → the workflow publishes the release with both .tgz attached
+```
+
+> Building locally instead? Run `npm run pack:all` and upload `artifacts/*.tgz` to a release by hand with `gh release create v0.1.0 artifacts/*.tgz`.
 
 Then, in the consuming project, install straight from the asset URLs:
 

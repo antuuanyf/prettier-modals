@@ -1,5 +1,11 @@
 # Prettier Modals
 
+[![npm core](https://img.shields.io/npm/v/prettier-modals?label=core)](https://www.npmjs.com/package/prettier-modals)
+[![npm angular](https://img.shields.io/npm/v/prettier-modals-angular?label=angular)](https://www.npmjs.com/package/prettier-modals-angular)
+[![GitHub Release](https://img.shields.io/github/v/release/antuuanyf/prettier-modals)](https://github.com/antuuanyf/prettier-modals/releases)
+[![CI](https://github.com/antuuanyf/prettier-modals/actions/workflows/ci.yml/badge.svg)](https://github.com/antuuanyf/prettier-modals/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/antuuanyf/prettier-modals)](LICENSE)
+
 Beautiful open/close animations for native `<dialog>` elements, powered by [GSAP](https://gsap.com/) and its [Flip plugin](https://gsap.com/docs/v3/Plugins/Flip/). The modal morphs **from** its trigger and collapses **back into it** — with elastic easing, blur, and fade.
 
 This is a monorepo with two packages:
@@ -9,71 +15,53 @@ This is a monorepo with two packages:
 | [`prettier-modals`](packages/core) | Framework-agnostic vanilla JS core. |
 | [`prettier-modals-angular`](packages/angular) | Standalone Angular directives + service over the core. |
 
-## Quick start (vanilla)
+## Installation
+
+### From npm (recommended)
 
 ```bash
+# Vanilla
 npm install prettier-modals gsap
 ```
 
-See [`packages/core/README.md`](packages/core/README.md) for full usage.
-
-## Quick start (Angular)
-
 ```bash
+# Angular
 npm install prettier-modals-angular prettier-modals gsap
 ```
 
-See [`packages/angular/README.md`](packages/angular/README.md) for full usage.
+GSAP is a peer dependency (`>=3.12`) in both packages.
 
-## Using it before the npm release
+See [`packages/core/README.md`](packages/core/README.md) and [`packages/angular/README.md`](packages/angular/README.md) for full usage.
 
-Not on npm yet. Until then you can consume the exact publishable artifacts as tarballs. From this repo:
+### From a GitHub Release
+
+Each [GitHub Release](https://github.com/antuuanyf/prettier-modals/releases) includes the publishable tarballs. Download them and install directly:
 
 ```bash
-npm install        # if you haven't already
+# vanilla
+npm install prettier-modals-0.1.0.tgz gsap
+
+# Angular — install both tarballs together so the wrapper's peer dependency resolves
+npm install prettier-modals-0.1.0.tgz prettier-modals-angular-0.1.0.tgz gsap
+```
+
+### From local tarballs (offline / air-gapped)
+
+If you have the repo cloned, build the tarballs locally:
+
+```bash
 npm run pack:all   # builds both packages → artifacts/*.tgz
 ```
 
-This produces `artifacts/prettier-modals-0.1.0.tgz` and `artifacts/prettier-modals-angular-0.1.0.tgz`. In the consuming project:
+Then install the `.tgz` files:
 
 ```bash
 # vanilla
-npm install /path/to/artifacts/prettier-modals-0.1.0.tgz gsap
+npm install artifacts/prettier-modals-0.1.0.tgz gsap
 
-# Angular (also needs the core tarball + Angular peers)
-npm install /path/to/artifacts/prettier-modals-0.1.0.tgz \
-            /path/to/artifacts/prettier-modals-angular-0.1.0.tgz gsap
+# Angular
+npm install artifacts/prettier-modals-0.1.0.tgz artifacts/prettier-modals-angular-0.1.0.tgz gsap
 ```
-
-### From a GitHub Release (no local checkout needed)
-
-Prefer a URL anyone can install from? Releases are built automatically. Pushing a `v*` tag triggers the [release workflow](.github/workflows/release.yml), which runs `pack:all` and attaches both tarballs to the matching GitHub Release:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-# → the workflow publishes the release with both .tgz attached
-```
-
-> Building locally instead? Run `npm run pack:all` and upload `artifacts/*.tgz` to a release by hand with `gh release create v0.1.0 artifacts/*.tgz`.
-
-Then, in the consuming project, install straight from the asset URLs:
-
-```bash
-# vanilla
-npm install https://github.com/antuuanyf/prettier-modals/releases/download/v0.1.0/prettier-modals-0.1.0.tgz gsap
-
-# Angular — install BOTH URLs together so the wrapper's `prettier-modals`
-# peer resolves to the core tarball instead of being looked up on npm
-npm install \
-  https://github.com/antuuanyf/prettier-modals/releases/download/v0.1.0/prettier-modals-0.1.0.tgz \
-  https://github.com/antuuanyf/prettier-modals/releases/download/v0.1.0/prettier-modals-angular-0.1.0.tgz \
-  gsap
-```
-
-> Install the Angular wrapper and the core **in the same command**. The wrapper declares `prettier-modals` as a peer dependency; if you install it alone, npm tries to fetch `prettier-modals` from the npm registry (where it doesn't exist yet) and fails.
-
-> `npm install github:antuuanyf/prettier-modals` does **not** work here: it's a monorepo (the root `package.json` is private and only orchestrates the workspaces) and the built `dist/` is git-ignored, so a git install has nothing to import. Use the tarballs.
 
 ## Demo
 

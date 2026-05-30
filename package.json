@@ -10,6 +10,7 @@
     "build": "npm run build --workspaces --if-present",
     "build:core": "npm run build -w prettier-modals",
     "build:angular": "npm run build -w prettier-modals-angular",
+    "pack:all": "npm run build:core && npm run build:angular && mkdir -p artifacts && npm pack ./packages/core --pack-destination artifacts && npm pack ./packages/angular/dist --pack-destination artifacts",
     "demo:angular": "npm --prefix demos/angular start",
     "build:demo:angular": "npm --prefix demos/angular run build",
     "test": "npm run test --workspaces --if-present",

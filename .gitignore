@@ -10,3 +10,6 @@ playwright-report/
 
 # Local-only planning notes
 docs/
+
+# npm pack output
+artifacts/

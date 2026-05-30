@@ -25,6 +25,34 @@ npm install prettier-modals-angular prettier-modals gsap
 
 See [`packages/angular/README.md`](packages/angular/README.md) for full usage.
 
+## Using it before the npm release
+
+Not on npm yet. Until then you can consume the exact publishable artifacts as tarballs. From this repo:
+
+```bash
+npm install        # if you haven't already
+npm run pack:all   # builds both packages → artifacts/*.tgz
+```
+
+This produces `artifacts/prettier-modals-0.1.0.tgz` and `artifacts/prettier-modals-angular-0.1.0.tgz`. In the consuming project:
+
+```bash
+# vanilla
+npm install /path/to/artifacts/prettier-modals-0.1.0.tgz gsap
+
+# Angular (also needs the core tarball + Angular peers)
+npm install /path/to/artifacts/prettier-modals-0.1.0.tgz \
+            /path/to/artifacts/prettier-modals-angular-0.1.0.tgz gsap
+```
+
+Prefer a URL? Attach those `.tgz` files to a GitHub Release and install straight from it:
+
+```bash
+npm install https://github.com/antuuanyf/prettier-modals/releases/download/v0.1.0/prettier-modals-0.1.0.tgz
+```
+
+> `npm install github:antuuanyf/prettier-modals` does **not** work here: it's a monorepo (the root `package.json` is private and only orchestrates the workspaces) and the built `dist/` is git-ignored, so a git install has nothing to import. Use the tarballs.
+
 ## Demo
 
 The vanilla demo loads the source directly (no build). Serve the repo over HTTP — ES modules and import maps don't work from `file://`:

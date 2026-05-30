@@ -1,0 +1,37 @@
+name: Release
+
+# Build the publishable tarballs and attach them to the GitHub Release
+# whenever a v* tag is pushed (e.g. `git tag v0.1.0 && git push origin v0.1.0`).
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # needed to create/update the release and upload assets
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Build packages and pack tarballs
+        run: npm run pack:all
+
+      - name: Attach tarballs to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*.tgz
+          generate_release_notes: true
+          body: |
+            Pre-npm release. Install the attached tarballs — see
+            [Using it before the npm release](https://github.com/antuuanyf/prettier-modals#using-it-before-the-npm-release).

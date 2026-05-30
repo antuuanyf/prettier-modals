@@ -1,47 +1,46 @@
 import { Component } from '@angular/core'
-import { PRETTY_MODAL_DIRECTIVES } from 'pretty-modal-angular'
+import { ModalTriggerButtonComponent } from './modal-trigger-button.component'
+import { ModalComponent } from './modal.component'
 
 /**
- * Mirrors the vanilla demo but driven entirely by the Angular directives, so it
- * exercises the published `pretty-modal-angular` artifact end to end:
- * `[prettyModalTrigger]`, `[prettyModal]`, `[prettyModalClose]` and the
- * `(opened)` / `(closed)` outputs.
+ * Demonstrates the cross-component pattern: the trigger buttons
+ * (`app-modal-trigger-button`) and the modals (`app-modal`) are **separate
+ * standalone components**, only linked by a shared dialog id. This works
+ * because the `PrettyModalService` is a root singleton and the core resolves
+ * dialogs through `document.getElementById`, so neither needs to know about the
+ * other's component.
  */
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [...PRETTY_MODAL_DIRECTIVES],
+  imports: [ModalTriggerButtonComponent, ModalComponent],
   template: `
     <div class="container">
-      <button [prettyModalTrigger]="'dialog-1'" anchor="origin">
+      <app-modal-trigger-button target="dialog-1" anchor="origin">
         Abrir modal al origen
-      </button>
-      <button [prettyModalTrigger]="'dialog-2'" anchor="center">
+      </app-modal-trigger-button>
+      <app-modal-trigger-button target="dialog-2" anchor="center">
         Abrir modal al centro
-      </button>
+      </app-modal-trigger-button>
     </div>
 
-    <dialog
-      id="dialog-1"
-      prettyModal
+    <app-modal
+      modalId="dialog-1"
       anchor="origin"
       (opened)="onOpened('dialog-1')"
       (closed)="onClosed('dialog-1')"
     >
-      <button prettyModalClose>Cerrar</button>
       <h1>Modal abierto al origen</h1>
-    </dialog>
+    </app-modal>
 
-    <dialog
-      id="dialog-2"
-      prettyModal
+    <app-modal
+      modalId="dialog-2"
       anchor="center"
       (opened)="onOpened('dialog-2')"
       (closed)="onClosed('dialog-2')"
     >
-      <button prettyModalClose>Cerrar</button>
       <h1>Modal abierto al centro</h1>
-    </dialog>
+    </app-modal>
 
     <p class="status">Último evento: {{ lastEvent || '—' }}</p>
   `,

@@ -62,6 +62,69 @@ No `ViewChild`, no `NgZone` boilerplate — the directives wire everything to th
 
 `animateCancel` (default `true`) intercepts the native Escape key so it closes with the animation instead of instantly.
 
+## Trigger and dialog in separate components
+
+The trigger and the `<dialog>` **don't have to live in the same component**. They're linked only by the dialog's `id`: the `PrettyModalService` is a root singleton shared by the whole app, and the core resolves the dialog through `document.getElementById`. So you can wrap each part in its own reusable component:
+
+```ts
+// button.component.ts — knows only the target dialog id
+import { Component, Input } from '@angular/core'
+import { PrettyModalTriggerDirective, type PrettyModalAnchor } from 'pretty-modal-angular'
+
+@Component({
+  selector: 'app-modal-button',
+  standalone: true,
+  imports: [PrettyModalTriggerDirective],
+  template: `<button [prettyModalTrigger]="target" [anchor]="anchor"><ng-content /></button>`,
+})
+export class ModalButtonComponent {
+  @Input({ required: true }) target!: string
+  @Input() anchor?: PrettyModalAnchor
+}
+```
+
+```ts
+// modal.component.ts — owns the dialog, declared independently
+import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { PrettyModalDirective, PrettyModalCloseDirective, type PrettyModalAnchor } from 'pretty-modal-angular'
+
+@Component({
+  selector: 'app-modal',
+  standalone: true,
+  imports: [PrettyModalDirective, PrettyModalCloseDirective],
+  template: `
+    <dialog [id]="modalId" prettyModal [anchor]="anchor"
+            (opened)="opened.emit($event)" (closed)="closed.emit($event)">
+      <button prettyModalClose>Close</button>
+      <ng-content />
+    </dialog>
+  `,
+})
+export class ModalComponent {
+  // Don't name this input `id`: a native `id` would also be reflected onto the
+  // host <app-modal>, duplicating the id and breaking document.getElementById.
+  @Input({ required: true }) modalId!: string
+  @Input() anchor?: PrettyModalAnchor
+  @Output() opened = new EventEmitter<HTMLDialogElement>()
+  @Output() closed = new EventEmitter<HTMLDialogElement>()
+}
+```
+
+A parent just drops both in and matches the id:
+
+```html
+<app-modal-button target="settings" anchor="origin">Open</app-modal-button>
+
+<app-modal modalId="settings" anchor="origin">
+  <h1>Settings</h1>
+</app-modal>
+```
+
+Two things to keep in mind:
+
+- The dialog `id` must be **unique in the document** — Angular's view encapsulation scopes CSS, not `id` attributes. Avoid exposing a wrapper input literally named `id`: Angular reflects it onto the host element too, so it ends up duplicated (use `modalId` or similar, as above).
+- The `<dialog>` must be **rendered in the DOM** when the trigger fires. Don't strip it with `@if`/`*ngIf`; it stays hidden until opened anyway.
+
 ## Imperative usage (service)
 
 ```ts

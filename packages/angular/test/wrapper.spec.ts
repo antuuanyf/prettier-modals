@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { ElementRef, EnvironmentInjector, NgZone, PLATFORM_ID, runInInjectionContext } from '@angular/core'
+import {
+  Component,
+  ElementRef,
+  EnvironmentInjector,
+  NgZone,
+  PLATFORM_ID,
+  runInInjectionContext,
+} from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 
 // Mock the vanilla core so no real GSAP animation runs; we only assert wiring.
@@ -215,5 +222,53 @@ describe('PrettyModalDirective', () => {
     dir.ngOnInit()
     dir.ngOnDestroy()
     expect(service.unregister).toHaveBeenCalledWith('settings')
+  })
+})
+
+describe('cross-component usage (separate Button and Modal components)', () => {
+  // A "button" component that only knows the target dialog id.
+  @Component({
+    standalone: true,
+    imports: [PrettyModalTriggerDirective],
+    template: `<button [prettyModalTrigger]="target" anchor="center">Open</button>`,
+  })
+  class TriggerHostComponent {
+    target = 'remote-dialog'
+  }
+
+  // A "modal" component declared independently of the trigger.
+  @Component({
+    standalone: true,
+    imports: [PrettyModalDirective, PrettyModalCloseDirective],
+    template: `<dialog id="remote-dialog" prettyModal anchor="origin">
+      <button prettyModalClose>Close</button>
+    </dialog>`,
+  })
+  class ModalHostComponent {}
+
+  it('links a trigger and a dialog living in different components via the root service', () => {
+    // Both components share the providedIn:'root' service in one TestBed module.
+    const modalFixture = TestBed.createComponent(ModalHostComponent)
+    const triggerFixture = TestBed.createComponent(TriggerHostComponent)
+    modalFixture.detectChanges()
+    triggerFixture.detectChanges()
+
+    const service = TestBed.inject(PrettyModalService)
+    const openSpy = vi.spyOn(service, 'open')
+
+    // The dialog component registered itself, so the trigger can resolve it.
+    expect(service.registration('remote-dialog')).toBeDefined()
+    // Its registered anchor ('origin') is independent of the trigger's host attr.
+    expect(service.registration('remote-dialog')?.anchor).toBe('origin')
+
+    const button = triggerFixture.nativeElement.querySelector('button') as HTMLButtonElement
+    button.click()
+
+    expect(openSpy).toHaveBeenCalledOnce()
+    const [target, opts] = openSpy.mock.calls[0]
+    expect(target).toBe('remote-dialog')
+    expect(opts?.anchor).toBe('center')
+    // onOpen is wired to the dialog component's registration even across components.
+    expect(typeof opts?.onOpen).toBe('function')
   })
 })

@@ -33,5 +33,14 @@ jobs:
           files: artifacts/*.tgz
           generate_release_notes: true
           body: |
-            Pre-npm release. Install the attached tarballs — see
-            [Using it before the npm release](https://github.com/antuuanyf/prettier-modals#using-it-before-the-npm-release).
+            Install from npm (recommended):
+
+            ```bash
+            # Vanilla
+            npm install prettier-modals gsap
+
+            # Angular
+            npm install prettier-modals-angular prettier-modals gsap
+            ```
+
+            Or install the attached tarballs directly.

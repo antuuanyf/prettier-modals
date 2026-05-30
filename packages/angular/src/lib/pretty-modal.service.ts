@@ -1,6 +1,6 @@
 import { Injectable, NgZone, PLATFORM_ID, inject } from '@angular/core'
 import { isPlatformBrowser } from '@angular/common'
-import { PrettyModal } from 'pretty-modal'
+import { PrettyModal } from 'prettier-modals'
 import type { PrettyModalOptions, PrettyModalRegistration } from './pretty-modal.types'
 
 /**

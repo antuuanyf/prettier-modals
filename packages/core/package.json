@@ -1,5 +1,5 @@
 {
-  "name": "pretty-modal",
+  "name": "prettier-modals",
   "version": "0.1.0",
   "description": "Beautiful open/close animations for native <dialog> elements, powered by GSAP Flip.",
   "type": "module",
@@ -34,11 +34,11 @@
     "animation",
     "vanilla"
   ],
-  "author": "srdavo",
+  "author": "Antonio Monreal Diaz",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/srdavo/pretty-modal.git"
+    "url": "git+https://github.com/antuuanyf/prettier-modals.git"
   },
   "peerDependencies": {
     "gsap": ">=3.12"

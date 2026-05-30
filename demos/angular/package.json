@@ -1,8 +1,8 @@
 {
-  "name": "pretty-modal-angular-demo",
+  "name": "prettier-modals-angular-demo",
   "version": "0.0.0",
   "private": true,
-  "description": "Standalone Angular app that consumes the built pretty-modal-angular package.",
+  "description": "Standalone Angular app that consumes the built prettier-modals-angular package.",
   "scripts": {
     "start": "ng serve",
     "build": "ng build"
@@ -14,8 +14,8 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "gsap": "^3.15.0",
-    "pretty-modal": "file:../../packages/core",
-    "pretty-modal-angular": "file:../../packages/angular/dist",
+    "prettier-modals": "file:../../packages/core",
+    "prettier-modals-angular": "file:../../packages/angular/dist",
     "rxjs": "^7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "^0.15.0"

@@ -1,4 +1,4 @@
-# Pretty Modal
+# Prettier Modals
 
 A tiny JavaScript class that brings beautiful open/close animations to native `<dialog>` elements using [GSAP](https://gsap.com/) and its [Flip plugin](https://gsap.com/docs/v3/Plugins/Flip/).
 
@@ -17,16 +17,16 @@ The modal morphs **from** the trigger button and collapses **back into it** when
 ## Installation
 
 ```bash
-npm install pretty-modal gsap
+npm install prettier-modals gsap
 ```
 
-GSAP is a **peer dependency** (`>=3.12`) — install it alongside Pretty Modal. The package ships ESM, CJS, and TypeScript types.
+GSAP is a **peer dependency** (`>=3.12`) — install it alongside Prettier Modals. The package ships ESM, CJS, and TypeScript types.
 
 ## Usage
 
 ### 1. Register the GSAP plugins
 
-Pretty Modal imports GSAP, `Flip`, and `CustomEase` internally, but GSAP requires the plugins to be registered once in your app:
+Prettier Modals imports GSAP, `Flip`, and `CustomEase` internally, but GSAP requires the plugins to be registered once in your app:
 
 ```js
 import gsap from 'gsap'
@@ -41,7 +41,7 @@ gsap.registerPlugin(Flip, CustomEase)
 ### 2. Create the instance
 
 ```js
-import { PrettyModal } from 'pretty-modal'
+import { PrettyModal } from 'prettier-modals'
 
 const prettyModal = new PrettyModal()
 ```
@@ -100,8 +100,8 @@ CSS keyframe animations handle the blur/fade/border-radius effects during transi
 The demo lives in `demo/` and loads the source directly via an [import map](demo/index.html) (no build step). Because ES modules and import maps require HTTP (not `file://`), serve it with any static server:
 
 ```bash
-git clone https://github.com/srdavo/pretty-modal.git
-cd pretty-modal
+git clone https://github.com/antuuanyf/prettier-modals.git
+cd prettier-modals
 
 # any static server works, e.g.:
 npx serve .
@@ -129,7 +129,7 @@ In a plain `<script type="module">` setup, point an import map at GSAP's combine
 
 ## Customization
 
-Style your `<dialog>` however you want with regular CSS. Pretty Modal only handles the animation — layout, colors, and sizing are up to you.
+Style your `<dialog>` however you want with regular CSS. Prettier Modals only handles the animation — layout, colors, and sizing are up to you.
 
 ```css
 dialog {
@@ -176,4 +176,4 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ## Credits
 
-Built by [srdavo](https://github.com/srdavo). Powered by [GSAP](https://gsap.com/).
+Maintained by [Antonio Monreal Diaz](https://github.com/antuuanyf), based on the original work by [srdavo](https://github.com/srdavo). Powered by [GSAP](https://gsap.com/).

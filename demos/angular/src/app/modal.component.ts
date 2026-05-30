@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { PrettyModalDirective, PrettyModalCloseDirective } from 'pretty-modal-angular'
-import type { PrettyModalAnchor } from 'pretty-modal-angular'
+import { PrettyModalDirective, PrettyModalCloseDirective } from 'prettier-modals-angular'
+import type { PrettyModalAnchor } from 'prettier-modals-angular'
 
 /**
  * Standalone "modal" component, declared separately from the trigger button.

@@ -1,4 +1,4 @@
-# Pretty Modal
+# Prettier Modals
 
 Beautiful open/close animations for native `<dialog>` elements, powered by [GSAP](https://gsap.com/) and its [Flip plugin](https://gsap.com/docs/v3/Plugins/Flip/). The modal morphs **from** its trigger and collapses **back into it** — with elastic easing, blur, and fade.
 
@@ -6,13 +6,13 @@ This is a monorepo with two packages:
 
 | Package | Description |
 |---|---|
-| [`pretty-modal`](packages/core) | Framework-agnostic vanilla JS core. |
-| [`pretty-modal-angular`](packages/angular) | Standalone Angular directives + service over the core. |
+| [`prettier-modals`](packages/core) | Framework-agnostic vanilla JS core. |
+| [`prettier-modals-angular`](packages/angular) | Standalone Angular directives + service over the core. |
 
 ## Quick start (vanilla)
 
 ```bash
-npm install pretty-modal gsap
+npm install prettier-modals gsap
 ```
 
 See [`packages/core/README.md`](packages/core/README.md) for full usage.
@@ -20,7 +20,7 @@ See [`packages/core/README.md`](packages/core/README.md) for full usage.
 ## Quick start (Angular)
 
 ```bash
-npm install pretty-modal-angular pretty-modal gsap
+npm install prettier-modals-angular prettier-modals gsap
 ```
 
 See [`packages/angular/README.md`](packages/angular/README.md) for full usage.
@@ -38,11 +38,11 @@ npx serve .
 
 ```bash
 npm install            # install all workspaces
-npm run build:core     # build pretty-modal (tsup → ESM + CJS + .d.ts)
-npm run build:angular  # build pretty-modal-angular (ng-packagr → APF)
+npm run build:core     # build prettier-modals (tsup → ESM + CJS + .d.ts)
+npm run build:angular  # build prettier-modals-angular (ng-packagr → APF)
 npm run build          # build everything
 ```
 
 ## License
 
-MIT © srdavo
+MIT © Antonio Monreal Diaz

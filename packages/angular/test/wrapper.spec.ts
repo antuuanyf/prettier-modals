@@ -18,7 +18,7 @@ const core = vi.hoisted(() => {
   })
   return { instance, ctor }
 })
-vi.mock('pretty-modal', () => ({ PrettyModal: core.ctor }))
+vi.mock('prettier-modals', () => ({ PrettyModal: core.ctor }))
 
 import { PrettyModalService } from '../src/lib/pretty-modal.service'
 import { PrettyModalTriggerDirective } from '../src/lib/pretty-modal-trigger.directive'

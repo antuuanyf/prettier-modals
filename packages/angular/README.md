@@ -1,16 +1,16 @@
-# pretty-modal-angular
+# prettier-modals-angular
 
-Angular directives and an injectable service for [Pretty Modal](https://github.com/srdavo/pretty-modal) — beautiful open/close animations for native `<dialog>` elements, powered by GSAP Flip.
+Angular directives and an injectable service for [Prettier Modals](https://github.com/antuuanyf/prettier-modals) — beautiful open/close animations for native `<dialog>` elements, powered by GSAP Flip.
 
 Standalone (no `NgModule`), SSR-safe, and runs animations outside the Angular zone.
 
 ## Installation
 
 ```bash
-npm install pretty-modal-angular pretty-modal gsap
+npm install prettier-modals-angular prettier-modals gsap
 ```
 
-`pretty-modal`, `gsap`, and `@angular/core`/`@angular/common` are peer dependencies (Angular `>=17`).
+`prettier-modals`, `gsap`, and `@angular/core`/`@angular/common` are peer dependencies (Angular `>=17`).
 
 Register the GSAP plugins once, e.g. in `main.ts`:
 
@@ -28,7 +28,7 @@ Import the directives you need — or `PRETTY_MODAL_DIRECTIVES` for all of them 
 
 ```ts
 import { Component } from '@angular/core'
-import { PRETTY_MODAL_DIRECTIVES } from 'pretty-modal-angular'
+import { PRETTY_MODAL_DIRECTIVES } from 'prettier-modals-angular'
 
 @Component({
   selector: 'app-settings',
@@ -69,7 +69,7 @@ The trigger and the `<dialog>` **don't have to live in the same component**. The
 ```ts
 // button.component.ts — knows only the target dialog id
 import { Component, Input } from '@angular/core'
-import { PrettyModalTriggerDirective, type PrettyModalAnchor } from 'pretty-modal-angular'
+import { PrettyModalTriggerDirective, type PrettyModalAnchor } from 'prettier-modals-angular'
 
 @Component({
   selector: 'app-modal-button',
@@ -86,7 +86,7 @@ export class ModalButtonComponent {
 ```ts
 // modal.component.ts — owns the dialog, declared independently
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { PrettyModalDirective, PrettyModalCloseDirective, type PrettyModalAnchor } from 'pretty-modal-angular'
+import { PrettyModalDirective, PrettyModalCloseDirective, type PrettyModalAnchor } from 'prettier-modals-angular'
 
 @Component({
   selector: 'app-modal',
@@ -129,7 +129,7 @@ Two things to keep in mind:
 
 ```ts
 import { Component, inject } from '@angular/core'
-import { PrettyModalService } from 'pretty-modal-angular'
+import { PrettyModalService } from 'prettier-modals-angular'
 
 @Component({ /* … */ })
 export class MyComponent {
@@ -149,4 +149,4 @@ export class MyComponent {
 
 ## License
 
-MIT © srdavo
+MIT © Antonio Monreal Diaz

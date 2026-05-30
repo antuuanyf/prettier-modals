@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core'
-import { PrettyModalTriggerDirective } from 'pretty-modal-angular'
-import type { PrettyModalAnchor } from 'pretty-modal-angular'
+import { PrettyModalTriggerDirective } from 'prettier-modals-angular'
+import type { PrettyModalAnchor } from 'prettier-modals-angular'
 
 /**
  * Standalone "button" component that lives independently from the modal. It only

@@ -1,7 +1,7 @@
 {
-  "name": "pretty-modal-angular",
+  "name": "prettier-modals-angular",
   "version": "0.1.0",
-  "description": "Angular directives and service for Pretty Modal — beautiful <dialog> animations powered by GSAP Flip.",
+  "description": "Angular directives and service for Prettier Modals — beautiful <dialog> animations powered by GSAP Flip.",
   "keywords": [
     "angular",
     "modal",
@@ -11,11 +11,11 @@
     "animation",
     "directive"
   ],
-  "author": "srdavo",
+  "author": "Antonio Monreal Diaz",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/srdavo/pretty-modal.git",
+    "url": "git+https://github.com/antuuanyf/prettier-modals.git",
     "directory": "packages/angular"
   },
   "scripts": {
@@ -27,7 +27,7 @@
     "@angular/common": ">=17",
     "@angular/core": ">=17",
     "gsap": ">=3.12",
-    "pretty-modal": "^0.1.0"
+    "prettier-modals": "^0.1.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

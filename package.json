@@ -1,15 +1,15 @@
 {
-  "name": "pretty-modal-workspace",
+  "name": "prettier-modals-workspace",
   "version": "0.0.0",
   "private": true,
-  "description": "Monorepo for Pretty Modal — vanilla core + Angular wrapper.",
+  "description": "Monorepo for Prettier Modals — vanilla core + Angular wrapper.",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "build:core": "npm run build -w pretty-modal",
-    "build:angular": "npm run build -w pretty-modal-angular",
+    "build:core": "npm run build -w prettier-modals",
+    "build:angular": "npm run build -w prettier-modals-angular",
     "demo:angular": "npm --prefix demos/angular start",
     "build:demo:angular": "npm --prefix demos/angular run build",
     "test": "npm run test --workspaces --if-present",

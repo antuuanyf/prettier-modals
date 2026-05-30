@@ -25,6 +25,57 @@ npm install prettier-modals-angular prettier-modals gsap
 
 See [`packages/angular/README.md`](packages/angular/README.md) for full usage.
 
+## Using it before the npm release
+
+Not on npm yet. Until then you can consume the exact publishable artifacts as tarballs. From this repo:
+
+```bash
+npm install        # if you haven't already
+npm run pack:all   # builds both packages → artifacts/*.tgz
+```
+
+This produces `artifacts/prettier-modals-0.1.0.tgz` and `artifacts/prettier-modals-angular-0.1.0.tgz`. In the consuming project:
+
+```bash
+# vanilla
+npm install /path/to/artifacts/prettier-modals-0.1.0.tgz gsap
+
+# Angular (also needs the core tarball + Angular peers)
+npm install /path/to/artifacts/prettier-modals-0.1.0.tgz \
+            /path/to/artifacts/prettier-modals-angular-0.1.0.tgz gsap
+```
+
+### From a GitHub Release (no local checkout needed)
+
+Prefer a URL anyone can install from? Create a Release and attach the tarballs:
+
+1. Run `npm run pack:all` to produce the two `.tgz` in `artifacts/`.
+2. Create a release tagged `v0.1.0` and upload both files as assets:
+   ```bash
+   gh release create v0.1.0 \
+     artifacts/prettier-modals-0.1.0.tgz \
+     artifacts/prettier-modals-angular-0.1.0.tgz \
+     --title "v0.1.0" --notes "Pre-npm release. Install the attached tarballs."
+   ```
+
+Then, in the consuming project, install straight from the asset URLs:
+
+```bash
+# vanilla
+npm install https://github.com/antuuanyf/prettier-modals/releases/download/v0.1.0/prettier-modals-0.1.0.tgz gsap
+
+# Angular — install BOTH URLs together so the wrapper's `prettier-modals`
+# peer resolves to the core tarball instead of being looked up on npm
+npm install \
+  https://github.com/antuuanyf/prettier-modals/releases/download/v0.1.0/prettier-modals-0.1.0.tgz \
+  https://github.com/antuuanyf/prettier-modals/releases/download/v0.1.0/prettier-modals-angular-0.1.0.tgz \
+  gsap
+```
+
+> Install the Angular wrapper and the core **in the same command**. The wrapper declares `prettier-modals` as a peer dependency; if you install it alone, npm tries to fetch `prettier-modals` from the npm registry (where it doesn't exist yet) and fails.
+
+> `npm install github:antuuanyf/prettier-modals` does **not** work here: it's a monorepo (the root `package.json` is private and only orchestrates the workspaces) and the built `dist/` is git-ignored, so a git install has nothing to import. Use the tarballs.
+
 ## Demo
 
 The vanilla demo loads the source directly (no build). Serve the repo over HTTP — ES modules and import maps don't work from `file://`:

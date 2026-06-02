@@ -147,6 +147,23 @@ export class MyComponent {
 
 `PrettyModalService` lazily creates the core in the browser only (SSR-safe) and runs every animation outside the Angular zone.
 
+## Updating
+
+This wrapper and the vanilla core (`prettier-modals`) are **two separate packages** with independent versions. Update **both** so the wrapper runs against the matching core:
+
+```bash
+npm outdated prettier-modals-angular prettier-modals      # any newer versions?
+npm update prettier-modals-angular prettier-modals gsap   # update within your "^" ranges
+```
+
+For a major jump, install the latest explicitly:
+
+```bash
+npm install prettier-modals-angular@latest prettier-modals@latest
+```
+
+**Get notified of new versions:** every release is published as a [GitHub Release](https://github.com/antuuanyf/prettier-modals/releases). Click **Watch → Custom → Releases** on the repo to be notified whenever a new version ships, and check each release's notes for what changed.
+
 ## License
 
 MIT © Antonio Monreal Diaz

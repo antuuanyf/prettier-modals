@@ -142,6 +142,27 @@ dialog {
 }
 ```
 
+## Updating
+
+Check whether a newer version is available and update within your semver range:
+
+```bash
+npm outdated prettier-modals          # is there a newer version?
+npm update prettier-modals            # update within your "^" range (patches + minors)
+npm install prettier-modals@latest    # jump to the latest, including a new major
+```
+
+GSAP is a peer dependency, so keep it current too (`npm update gsap`).
+
+**Using the Angular wrapper?** It ships as a separate package. Update **both** — the
+wrapper does not pull a new core for you:
+
+```bash
+npm update prettier-modals-angular prettier-modals
+```
+
+**Get notified of new versions:** every release is published as a [GitHub Release](https://github.com/antuuanyf/prettier-modals/releases). Click **Watch → Custom → Releases** on the repo to be notified whenever a new version ships, and see each release's notes for what changed.
+
 ## Browser Support
 
 Works in all modern browsers that support `<dialog>` and ES modules (Chrome, Firefox, Safari, Edge).

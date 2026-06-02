@@ -72,7 +72,7 @@ prettyModal.open(dialogEl, { trigger: buttonEl, anchor: 'origin' })
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `anchor` | `'center' \| 'origin'` | `'center'` | Where the modal opens from. `origin` positions it near the trigger. |
-| `duration` | `number` | `0.4` | Flip animation duration (seconds). |
+| `duration` | `number` | `0.5` | Flip animation duration (seconds). |
 | `ease` | `string` | elastic | `CustomEase` SVG path for the Flip tween. |
 | `respectReducedMotion` | `boolean` | `true` | Skip animation when the user prefers reduced motion. |
 | `onOpen` | `(dialog) => void` | — | Called after the open animation completes. |

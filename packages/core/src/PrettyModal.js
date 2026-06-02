@@ -11,7 +11,7 @@ export class PrettyModal {
     /**
      * @param {Object} [options]
      * @param {'center'|'origin'} [options.anchor='center'] Where the modal opens from.
-     * @param {number} [options.duration=0.4] Animation duration in seconds.
+     * @param {number} [options.duration=0.5] Animation duration in seconds.
      * @param {string} [options.ease] CustomEase SVG path used for the Flip tween.
      * @param {boolean} [options.respectReducedMotion=true] Skip animation when the user prefers reduced motion.
      * @param {(dialog: HTMLDialogElement) => void} [options.onOpen]
@@ -20,7 +20,7 @@ export class PrettyModal {
     constructor(options = {}) {
         this.defaults = {
             anchor: 'center',
-            duration: 0.4,
+            duration: 0.5,
             ease: EASE,
             respectReducedMotion: true,
             onOpen: null,

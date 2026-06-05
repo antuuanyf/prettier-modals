@@ -1,6 +1,6 @@
 {
   "name": "prettier-modals",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Beautiful open/close animations for native <dialog> elements, powered by GSAP Flip.",
   "type": "module",
   "main": "./dist/PrettyModal.cjs",

@@ -4,13 +4,25 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 // before `vi.mock` factories run (which are themselves hoisted above imports).
 const h = vi.hoisted(() => ({
   registerPlugin: vi.fn(),
+  fromTo: vi.fn(),
+  to: vi.fn(),
+  set: vi.fn(),
+  toArray: vi.fn((v) => (v?.children ? Array.from(v.children) : Array.from(v ?? []))),
   flipFrom: vi.fn(),
   flipTo: vi.fn(),
   flipGetState: vi.fn(() => ({ __flipState: true })),
   customEaseCreate: vi.fn((name) => `ease:${name}`),
 }))
 
-vi.mock('gsap', () => ({ gsap: { registerPlugin: h.registerPlugin } }))
+vi.mock('gsap', () => ({
+  gsap: {
+    registerPlugin: h.registerPlugin,
+    fromTo: h.fromTo,
+    to: h.to,
+    set: h.set,
+    utils: { toArray: h.toArray },
+  },
+}))
 vi.mock('gsap/Flip', () => ({
   Flip: { from: h.flipFrom, to: h.flipTo, getState: h.flipGetState },
 }))
@@ -51,10 +63,12 @@ afterEach(() => {
 })
 
 describe('constructor', () => {
-  it('creates the CustomEase and injects the stylesheet', () => {
+  it('creates both eases and injects the stylesheet', () => {
     const m = new PrettyModal()
     expect(h.customEaseCreate).toHaveBeenCalledWith('pretty-modal-ease', expect.any(String))
+    expect(h.customEaseCreate).toHaveBeenCalledWith('pretty-modal-ease-origin', expect.any(String))
     expect(m.ease).toBe('ease:pretty-modal-ease')
+    expect(m.originEase).toBe('ease:pretty-modal-ease-origin')
     expect(document.getElementById('pretty-modal-styles')).not.toBeNull()
   })
 
@@ -118,6 +132,47 @@ describe('open', () => {
     expect(config.toggleClass).toBe('pretty-modal-opening')
   })
 
+  it('uses the overshoot origin ease for the origin anchor', () => {
+    const m = new PrettyModal()
+    const { dialog, trigger } = fixture()
+
+    m.open(dialog, { trigger, anchor: 'origin' })
+
+    expect(h.flipFrom.mock.calls[0][1].ease).toBe(m.originEase)
+  })
+
+  it('scales via transform by default', () => {
+    const m = new PrettyModal()
+    const { dialog, trigger } = fixture()
+
+    m.open(dialog, { trigger })
+    expect(h.flipFrom.mock.calls[0][1].scale).toBe(true)
+  })
+
+  it('honors an explicit scale: false', () => {
+    const m = new PrettyModal()
+    const { dialog, trigger } = fixture()
+
+    m.open(dialog, { trigger, scale: false })
+    expect(h.flipFrom.mock.calls[0][1].scale).toBe(false)
+  })
+
+  it('uses openDuration over the base duration for opening', () => {
+    const m = new PrettyModal({ duration: 1, openDuration: 0.2 })
+    const { dialog, trigger } = fixture()
+
+    m.open(dialog, { trigger })
+    expect(h.flipFrom.mock.calls[0][1].duration).toBe(0.2)
+  })
+
+  it('falls back to duration when openDuration is not set', () => {
+    const m = new PrettyModal()
+    const { dialog, trigger } = fixture()
+
+    m.open(dialog, { trigger, duration: 0.3 })
+    expect(h.flipFrom.mock.calls[0][1].duration).toBe(0.3)
+  })
+
   it('ignores a second open while the first is still animating', () => {
     const m = new PrettyModal()
     const { dialog, trigger } = fixture()
@@ -138,6 +193,36 @@ describe('open', () => {
 
     expect(onOpen).toHaveBeenCalledWith(dialog)
     expect(m.state.get(dialog).animating).toBe(false)
+  })
+
+  it('fades in the container and its content as separate layers', () => {
+    const m = new PrettyModal()
+    const { dialog, trigger } = fixture()
+    dialog.append(document.createElement('h1'))
+
+    m.open(dialog, { trigger, duration: 0.5 })
+
+    // Container layer: dialog itself, blur + opacity, no delay.
+    const container = h.fromTo.mock.calls.find(([t]) => t === dialog)
+    expect(container).toBeDefined()
+    expect(container[1]).toMatchObject({ opacity: 0, filter: 'blur(4px)' })
+    expect(container[2]).toMatchObject({ opacity: 1, filter: 'blur(0px)' })
+
+    // Content layer: dialog children, opacity only, delayed.
+    const content = h.fromTo.mock.calls.find(([t]) => Array.isArray(t))
+    expect(content).toBeDefined()
+    expect(content[2].delay).toBeGreaterThan(0)
+  })
+
+  it('clears inline opacity/filter once the open animation completes', () => {
+    const m = new PrettyModal()
+    const { dialog, trigger } = fixture()
+
+    m.open(dialog, { trigger })
+    const { onComplete } = h.flipFrom.mock.calls[0][1]
+    onComplete()
+
+    expect(h.set).toHaveBeenCalledWith(expect.any(Array), { clearProps: 'opacity,filter' })
   })
 })
 
@@ -198,6 +283,29 @@ describe('close', () => {
     expect(dialog.getAttribute('style')).toBe('')
     expect(dialog.close).toHaveBeenCalledOnce()
     expect(onClose).toHaveBeenCalledWith(dialog)
+  })
+
+  it('fades the content out (opacity + blur) on close', () => {
+    const m = new PrettyModal()
+    const { dialog, trigger } = fixture()
+    dialog.append(document.createElement('h1'))
+
+    m.open(dialog, { trigger })
+    h.to.mockClear()
+    m.close(dialog)
+
+    const fade = h.to.mock.calls.find(([t]) => Array.isArray(t))
+    expect(fade).toBeDefined()
+    expect(fade[1]).toMatchObject({ opacity: 0, filter: 'blur(4px)' })
+  })
+
+  it('uses closeDuration over the base duration for closing', () => {
+    const m = new PrettyModal({ duration: 1, closeDuration: 0.2 })
+    const { dialog, trigger } = fixture()
+
+    m.open(dialog, { trigger })
+    m.close(dialog)
+    expect(h.flipTo.mock.calls[0][1].duration).toBe(0.2)
   })
 })
 

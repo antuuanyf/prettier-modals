@@ -5,14 +5,23 @@ import { CustomEase } from 'gsap/CustomEase'
 gsap.registerPlugin(Flip, CustomEase)
 
 const STYLE_ID = 'pretty-modal-styles'
-const EASE = 'M0,0 C0.305,0.206 0.116,0.567 0.3,0.8 0.394,0.921 0.491,1 1,1'
+const EASE = 'M0,0 C0.308,0.19 0.107,0.633 0.288,0.866 0.382,0.987 0.656,1 1,1'
+// Overshoot ease: the box passes its final size and settles back, giving a
+// satisfying "pop" when morphing from a small trigger. Used for the `origin`
+// anchor (skipped when the modal ends up fullscreen — see #shouldScale).
+const ORIGIN_EASE = 'M0,0 C0.249,-0.124 0.045,0.925 0.335,1 0.625,1.074 0.532,0.987 1,1'
 
 export class PrettyModal {
     /**
      * @param {Object} [options]
      * @param {'center'|'origin'} [options.anchor='center'] Where the modal opens from.
-     * @param {number} [options.duration=0.5] Animation duration in seconds.
-     * @param {string} [options.ease] CustomEase SVG path used for the Flip tween.
+     * @param {number} [options.duration=0.7] Base animation duration in seconds (used when `openDuration`/`closeDuration` are not set).
+     * @param {number} [options.openDuration] Open animation duration in seconds. Defaults to `duration`.
+     * @param {number} [options.closeDuration] Close animation duration in seconds. Defaults to `duration`.
+     * @param {string} [options.ease] CustomEase SVG path used for the `center` anchor (and `origin` when fullscreen).
+     * @param {string} [options.originEase] CustomEase SVG path used for the `origin` anchor (overshoot by default).
+     * @param {boolean} [options.scale=true] Flip `scale` mode. `true` (default) morphs via `transform: scale`, which works even when the final size is locked by CSS `!important` (e.g. fullscreen on mobile). Set `false` to morph `width`/`height` directly for a cleaner aspect-ratio change — only works if the final size is animatable (not forced with `!important`).
+     * @param {number} [options.originGap=0] Gap in px between the trigger and the modal for the `origin` anchor. `0` overlaps the trigger; `>0` places the modal adjacent (popover/dropdown style).
      * @param {boolean} [options.respectReducedMotion=true] Skip animation when the user prefers reduced motion.
      * @param {(dialog: HTMLDialogElement) => void} [options.onOpen]
      * @param {(dialog: HTMLDialogElement) => void} [options.onClose]
@@ -21,7 +30,12 @@ export class PrettyModal {
         this.defaults = {
             anchor: 'center',
             duration: 0.5,
+            openDuration: 0.7,
+            closeDuration: null,
             ease: EASE,
+            originEase: ORIGIN_EASE,
+            scale: true,
+            originGap: 0,
             respectReducedMotion: true,
             onOpen: null,
             onClose: null,
@@ -33,6 +47,7 @@ export class PrettyModal {
 
         if (typeof document !== 'undefined') {
             this.ease = CustomEase.create('pretty-modal-ease', this.defaults.ease)
+            this.originEase = CustomEase.create('pretty-modal-ease-origin', this.defaults.originEase)
             this.injectStyles()
         }
     }
@@ -44,6 +59,7 @@ export class PrettyModal {
      * @param {string|HTMLElement} [options.trigger] Element to animate from. Defaults to `event.currentTarget` when called from an inline handler.
      * @param {'center'|'origin'} [options.anchor]
      * @param {number} [options.duration]
+     * @param {number} [options.openDuration] Open animation duration in seconds. Defaults to `duration`.
      * @param {boolean} [options.respectReducedMotion]
      * @param {(dialog: HTMLDialogElement) => void} [options.onOpen]
      * @param {(dialog: HTMLDialogElement) => void} [options.onClose]
@@ -78,25 +94,67 @@ export class PrettyModal {
         dialog.dataset.anchor = opts.anchor
         this.state.get(dialog).flipId = flipId
 
+        // Per-call values win over instance defaults; the specific
+        // openDuration wins over the general duration at each level.
+        const duration =
+            options.openDuration ?? options.duration ?? this.defaults.openDuration ?? this.defaults.duration
+
+        // Sync the ::backdrop CSS animation with the tween duration.
+        dialog.style.setProperty('--pretty-modal-duration', `${duration}s`)
+
         const originState = Flip.getState(trigger)
         dialog.showModal()
 
         if (opts.anchor === 'origin') {
-            this.#positionAtOrigin(dialog, trigger)
+            this.#positionAtOrigin(dialog, trigger, opts.originGap)
         }
 
+        // Default morph uses transform `scale` (works even when the final size
+        // is locked by CSS `!important`, e.g. fullscreen on mobile). When the
+        // modal ends up fullscreen we skip the overshoot so it never exceeds the
+        // viewport.
+        const fullscreen = this.#isFullscreen(dialog)
+        const ease = opts.anchor === 'origin' && !fullscreen ? this.originEase : this.ease
+
+        // Hijos directos del dialog: se animan como capa de contenido aparte.
+        const content = gsap.utils.toArray(dialog.children)
+
+        // Capa de geometría: Flip escala el dialog desde la caja del trigger
+        // hasta su caja final (el morph en sí).
         Flip.from(originState, {
             targets: dialog,
-            scale: true,
-            ease: this.ease,
+            scale: opts.scale,
+            ease,
             toggleClass: 'pretty-modal-opening',
-            duration: opts.duration,
+            duration,
             onComplete: () => {
                 const e = this.state.get(dialog)
                 if (e) e.animating = false
+                gsap.set([dialog, ...content], { clearProps: 'opacity,filter' })
                 opts.onOpen?.(dialog)
             },
         })
+
+        // Capa 1: el contenedor aparece rápido y suave mientras Flip lo escala,
+        // de modo que el morph sea visible (no un simple fade a tamaño final).
+        gsap.fromTo(
+            dialog,
+            { opacity: 0, filter: 'blur(4px)' },
+            { opacity: 1, filter: 'blur(0px)', duration: duration * 0.45, ease: 'power2.out' }
+        )
+
+        // Capa 2: el contenido entra cuando la caja está casi a tamaño final,
+        // evitando verlo estirado al escalar con `scale: true`.
+        gsap.fromTo(
+            content,
+            { opacity: 0 },
+            {
+                opacity: 1,
+                duration: duration * 0.5,
+                delay: duration * 0.5,
+                ease: 'power2.out',
+            }
+        )
     }
 
     /**
@@ -104,6 +162,7 @@ export class PrettyModal {
      * @param {string|HTMLDialogElement} dialogRef Dialog element or its id.
      * @param {Object} [options]
      * @param {number} [options.duration]
+     * @param {number} [options.closeDuration] Close animation duration in seconds. Defaults to `duration`.
      * @param {boolean} [options.respectReducedMotion]
      * @param {(dialog: HTMLDialogElement) => void} [options.onClose]
      */
@@ -125,20 +184,44 @@ export class PrettyModal {
 
         if (entry) entry.animating = true
 
+        // Per-call values win over instance defaults; the specific
+        // closeDuration wins over the general duration at each level.
+        const duration =
+            options.closeDuration ?? options.duration ?? this.defaults.closeDuration ?? this.defaults.duration
+
+        // Sync the ::backdrop CSS animation with the tween duration.
+        dialog.style.setProperty('--pretty-modal-duration', `${duration}s`)
+
+        // Mirror the open animation's scale/ease so the modal collapses the same
+        // way it grew.
+        const fullscreen = this.#isFullscreen(dialog)
+        const ease = entry?.anchor === 'origin' && !fullscreen ? this.originEase : this.ease
+
+        const content = gsap.utils.toArray(dialog.children)
         const originState = Flip.getState(trigger)
 
         Flip.to(originState, {
             targets: dialog,
-            scale: true,
-            ease: this.ease,
+            scale: opts.scale,
+            ease,
             toggleClass: 'pretty-modal-closing',
-            duration: opts.duration,
+            duration,
             onComplete: () => {
                 dialog.setAttribute('style', '')
+                gsap.set(content, { clearProps: 'opacity,filter' })
                 dialog.close()
                 if (entry) entry.animating = false
                 opts.onClose?.(dialog)
             },
+        })
+
+        // Reverse of the open content layer: the content fades out (with blur)
+        // early, before the box collapses back into the trigger.
+        gsap.to(content, {
+            opacity: 0,
+            filter: 'blur(4px)',
+            duration: duration * 0.5,
+            ease: 'power2.in',
         })
     }
 
@@ -170,7 +253,14 @@ export class PrettyModal {
         return window.matchMedia('(prefers-reduced-motion: reduce)').matches
     }
 
-    #positionAtOrigin(dialog, origin) {
+    /** True when the dialog occupies (almost) the whole viewport. */
+    #isFullscreen(dialog) {
+        if (typeof window === 'undefined') return false
+        const rect = dialog.getBoundingClientRect()
+        return rect.width >= window.innerWidth * 0.98 && rect.height >= window.innerHeight * 0.98
+    }
+
+    #positionAtOrigin(dialog, origin, gap = 0) {
         const originRect = origin.getBoundingClientRect()
         const vw = window.innerWidth
         const vh = window.innerHeight
@@ -185,8 +275,6 @@ export class PrettyModal {
 
         const spaceRight = vw - originRect.left
         const spaceLeft = originRect.right
-        const spaceBelow = vh - originRect.top
-        const spaceAbove = originRect.bottom
 
         if (dialogW <= spaceRight) {
             dialog.style.left = `${originRect.left}px`
@@ -196,10 +284,17 @@ export class PrettyModal {
             dialog.style.left = `${Math.max(0, (vw - dialogW) / 2)}px`
         }
 
+        // gap === 0 overlaps the trigger (morph from on top of it); gap > 0
+        // places the modal adjacent — below the trigger, or above if no room.
+        const topEdge = gap > 0 ? originRect.bottom + gap : originRect.top
+        const bottomEdge = gap > 0 ? originRect.top - gap : originRect.bottom
+        const spaceBelow = vh - topEdge
+        const spaceAbove = bottomEdge
+
         if (dialogH <= spaceBelow) {
-            dialog.style.top = `${originRect.top}px`
+            dialog.style.top = `${topEdge}px`
         } else if (dialogH <= spaceAbove) {
-            dialog.style.bottom = `${vh - originRect.bottom}px`
+            dialog.style.bottom = `${vh - bottomEdge}px`
         } else {
             dialog.style.top = `${Math.max(0, (vh - dialogH) / 2)}px`
         }
@@ -209,14 +304,6 @@ export class PrettyModal {
         if (document.getElementById(STYLE_ID)) return
 
         const styles = `
-            .pretty-modal-opening {
-                animation: pretty-modal-opening 500ms cubic-bezier(.56,.27,0,1);
-            }
-
-            @keyframes pretty-modal-opening {
-                from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: blur(0px); }
-            }
-
             .pretty-modal-closing {
                 animation:
                     pretty-modal-closing-border-radius 500ms cubic-bezier(.56,.27,0,1),
@@ -243,11 +330,11 @@ export class PrettyModal {
             }
 
             dialog.pretty-modal-opening::backdrop {
-                animation: pretty-modal-backdrop-in 400ms cubic-bezier(.56,.27,0,1);
+                animation: pretty-modal-backdrop-in var(--pretty-modal-duration, 400ms) cubic-bezier(.56,.27,0,1);
             }
 
             dialog.pretty-modal-closing::backdrop {
-                animation: pretty-modal-backdrop-out 400ms cubic-bezier(.56,.27,0,1) forwards;
+                animation: pretty-modal-backdrop-out var(--pretty-modal-duration, 400ms) cubic-bezier(.56,.27,0,1) forwards;
             }
 
             @keyframes pretty-modal-backdrop-in {

@@ -27,7 +27,7 @@
     "@angular/common": ">=17",
     "@angular/core": ">=17",
     "gsap": ">=3.12",
-    "prettier-modals": "^0.1.0"
+    "prettier-modals": ">=0.1.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

@@ -8,8 +8,9 @@ test-results/
 playwright-report/
 .angular/
 
-# Local-only planning notes
+# Local-only planning / internal notes
 docs/
+internal/
 
 # npm pack output
 artifacts/

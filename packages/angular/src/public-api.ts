@@ -6,9 +6,11 @@ export { PrettyModalService } from './lib/pretty-modal.service'
 export { PrettyModalDirective } from './lib/pretty-modal.directive'
 export { PrettyModalTriggerDirective } from './lib/pretty-modal-trigger.directive'
 export { PrettyModalCloseDirective } from './lib/pretty-modal-close.directive'
+export { PRETTY_MODAL_CONFIG, providePrettyModal } from './lib/pretty-modal.config'
 export type {
   PrettyModalAnchor,
   PrettyModalOptions,
+  PrettyModalConfig,
   PrettyModalRegistration,
 } from './lib/pretty-modal.types'
 

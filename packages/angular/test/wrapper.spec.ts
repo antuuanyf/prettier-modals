@@ -24,6 +24,7 @@ import { PrettyModalService } from '../src/lib/pretty-modal.service'
 import { PrettyModalTriggerDirective } from '../src/lib/pretty-modal-trigger.directive'
 import { PrettyModalCloseDirective } from '../src/lib/pretty-modal-close.directive'
 import { PrettyModalDirective } from '../src/lib/pretty-modal.directive'
+import { PRETTY_MODAL_CONFIG, providePrettyModal } from '../src/lib/pretty-modal.config'
 
 /**
  * Construct a directive inside an injection context with the given providers.
@@ -85,6 +86,27 @@ describe('PrettyModalService', () => {
     expect(core.instance.open).not.toHaveBeenCalled()
     expect(core.instance.close).not.toHaveBeenCalled()
   })
+
+  it('forwards PRETTY_MODAL_CONFIG to the core constructor (e.g. ease/originEase)', () => {
+    const config = { anchor: 'origin' as const, ease: 'M0,0 1,1', originGap: 8 }
+    TestBed.configureTestingModule({
+      providers: [
+        PrettyModalService,
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        providePrettyModal(config),
+      ],
+    })
+    const service = TestBed.inject(PrettyModalService)
+    service.open('dialog-1', { trigger: 'btn' })
+
+    expect(core.ctor).toHaveBeenCalledWith(config)
+  })
+
+  it('constructs the core without config when none is provided', () => {
+    const { service } = makeService('browser')
+    service.open('dialog-1', { trigger: 'btn' })
+    expect(core.ctor).toHaveBeenCalledWith(undefined)
+  })
 })
 
 describe('PrettyModalTriggerDirective', () => {
@@ -127,6 +149,47 @@ describe('PrettyModalTriggerDirective', () => {
     opts.onOpen('dlg')
     expect(registration.notifyOpened).toHaveBeenCalledWith('dlg')
   })
+
+  it('forwards the new per-call options when set', () => {
+    const host = document.createElement('button')
+    const service = { open: vi.fn(), registration: vi.fn(() => undefined) }
+    const dir = createInContext(PrettyModalTriggerDirective, [
+      { provide: ElementRef, useValue: new ElementRef(host) },
+      { provide: PrettyModalService, useValue: service },
+    ])
+    dir.target = 'dialog-1'
+    dir.duration = 0.4
+    dir.openDuration = 0.8
+    dir.scale = false
+    dir.originGap = 12
+    dir.respectReducedMotion = false
+
+    dir.onClick()
+
+    const [, opts] = service.open.mock.calls[0]
+    expect(opts.duration).toBe(0.4)
+    expect(opts.openDuration).toBe(0.8)
+    expect(opts.scale).toBe(false)
+    expect(opts.originGap).toBe(12)
+    expect(opts.respectReducedMotion).toBe(false)
+  })
+
+  it('omits unset options so the core defaults apply', () => {
+    const host = document.createElement('button')
+    const service = { open: vi.fn(), registration: vi.fn(() => undefined) }
+    const dir = createInContext(PrettyModalTriggerDirective, [
+      { provide: ElementRef, useValue: new ElementRef(host) },
+      { provide: PrettyModalService, useValue: service },
+    ])
+    dir.target = 'dialog-1'
+
+    dir.onClick()
+
+    const [, opts] = service.open.mock.calls[0]
+    expect('duration' in opts).toBe(false)
+    expect('scale' in opts).toBe(false)
+    expect('originGap' in opts).toBe(false)
+  })
 })
 
 describe('PrettyModalCloseDirective', () => {
@@ -152,6 +215,28 @@ describe('PrettyModalCloseDirective', () => {
     expect(typeof opts.onClose).toBe('function')
     opts.onClose('dlg')
     expect(registration.notifyClosed).toHaveBeenCalledWith('dlg')
+  })
+
+  it('forwards duration/closeDuration when set', () => {
+    const dialog = document.createElement('dialog')
+    dialog.id = 'dialog-1'
+    const host = document.createElement('button')
+    dialog.appendChild(host)
+    document.body.appendChild(dialog)
+
+    const service = { close: vi.fn(), registration: vi.fn(() => undefined) }
+    const dir = createInContext(PrettyModalCloseDirective, [
+      { provide: ElementRef, useValue: new ElementRef(host) },
+      { provide: PrettyModalService, useValue: service },
+    ])
+    dir.duration = 0.3
+    dir.closeDuration = 0.6
+
+    dir.onClick()
+
+    const [, opts] = service.close.mock.calls[0]
+    expect(opts.duration).toBe(0.3)
+    expect(opts.closeDuration).toBe(0.6)
   })
 
   it('does nothing when there is no dialog to close', () => {

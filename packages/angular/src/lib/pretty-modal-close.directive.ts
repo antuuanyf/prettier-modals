@@ -1,5 +1,6 @@
-import { Directive, ElementRef, HostListener, Input, inject } from '@angular/core'
+import { Directive, ElementRef, HostListener, Input, numberAttribute, inject } from '@angular/core'
 import { PrettyModalService } from './pretty-modal.service'
+import type { PrettyModalOptions } from './pretty-modal.types'
 
 /**
  * Closes a Pretty Modal dialog when the host element is clicked. By default it
@@ -21,6 +22,12 @@ export class PrettyModalCloseDirective {
   @Input({ alias: 'prettyModalClose' })
   target?: string | HTMLDialogElement | ''
 
+  /** Base animation duration in seconds for this close. */
+  @Input({ transform: numberAttribute }) duration?: number
+
+  /** Close animation duration in seconds. Defaults to `duration`. */
+  @Input({ transform: numberAttribute }) closeDuration?: number
+
   @HostListener('click')
   onClick(): void {
     const dialog = this.resolve()
@@ -29,9 +36,15 @@ export class PrettyModalCloseDirective {
     const id = typeof dialog === 'string' ? dialog : dialog.id
     const registration = id ? this.service.registration(id) : undefined
 
-    this.service.close(dialog, {
+    // Only forward options the caller set, so unset inputs fall back to the
+    // core instance defaults instead of overriding them with undefined.
+    const options: PrettyModalOptions = {
       onClose: registration ? (d) => registration.notifyClosed(d) : undefined,
-    })
+    }
+    if (this.duration !== undefined) options.duration = this.duration
+    if (this.closeDuration !== undefined) options.closeDuration = this.closeDuration
+
+    this.service.close(dialog, options)
   }
 
   private resolve(): string | HTMLDialogElement | null {

@@ -1,6 +1,7 @@
 import { Injectable, NgZone, PLATFORM_ID, inject } from '@angular/core'
 import { isPlatformBrowser } from '@angular/common'
 import { PrettyModal } from 'prettier-modals'
+import { PRETTY_MODAL_CONFIG } from './pretty-modal.config'
 import type { PrettyModalOptions, PrettyModalRegistration } from './pretty-modal.types'
 
 /**
@@ -14,6 +15,7 @@ import type { PrettyModalOptions, PrettyModalRegistration } from './pretty-modal
 export class PrettyModalService {
   private readonly zone = inject(NgZone)
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID))
+  private readonly config = inject(PRETTY_MODAL_CONFIG, { optional: true })
   private modal: PrettyModal | null = null
   private readonly registry = new Map<string, PrettyModalRegistration>()
 
@@ -55,7 +57,7 @@ export class PrettyModalService {
     if (!this.isBrowser) return null
     if (!this.modal) {
       this.zone.runOutsideAngular(() => {
-        this.modal = new PrettyModal()
+        this.modal = new PrettyModal(this.config ?? undefined)
       })
     }
     return this.modal

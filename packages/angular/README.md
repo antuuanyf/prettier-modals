@@ -57,10 +57,38 @@ No `ViewChild`, no `NgZone` boilerplate — the directives wire everything to th
 | Directive | Selector | Description |
 |---|---|---|
 | `PrettyModalDirective` | `dialog[prettyModal]` | Marks the dialog (needs an `id`). Inputs: `anchor`, `animateCancel`. Outputs: `(opened)`, `(closed)`. |
-| `PrettyModalTriggerDirective` | `[prettyModalTrigger]` | Opens the dialog whose id/element it's bound to, morphing from the host. Input: `anchor`. |
-| `PrettyModalCloseDirective` | `[prettyModalClose]` | Closes the nearest ancestor `<dialog>` (or a given id/element). |
+| `PrettyModalTriggerDirective` | `[prettyModalTrigger]` | Opens the dialog whose id/element it's bound to, morphing from the host. Inputs: `anchor`, `duration`, `openDuration`, `scale`, `originGap`, `respectReducedMotion`. |
+| `PrettyModalCloseDirective` | `[prettyModalClose]` | Closes the nearest ancestor `<dialog>` (or a given id/element). Inputs: `duration`, `closeDuration`. |
 
 `animateCancel` (default `true`) intercepts the native Escape key so it closes with the animation instead of instantly.
+
+Any input left unset falls back to the core instance defaults, so you only override what you need:
+
+```html
+<button [prettyModalTrigger]="'menu'" anchor="origin" [originGap]="8" [openDuration]="0.6">Menu</button>
+```
+
+### Global defaults (`providePrettyModal`)
+
+Some core options — `ease` and `originEase` (the CustomEase paths) — are compiled once when the core is built, so they're configured at the app level rather than per call. Use `providePrettyModal` to set them (and any other defaults) for the whole app:
+
+```ts
+import { bootstrapApplication } from '@angular/platform-browser'
+import { providePrettyModal } from 'prettier-modals-angular'
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    providePrettyModal({
+      anchor: 'origin',
+      originGap: 8,
+      ease: 'M0,0 C0.25,0.1 0.25,1 1,1',
+      originEase: 'M0,0 C0.34,1.56 0.64,1 1,1',
+    }),
+  ],
+})
+```
+
+The config accepts `anchor`, `duration`, `openDuration`, `closeDuration`, `ease`, `originEase`, `scale`, `originGap` and `respectReducedMotion`. Per-call options (on the directives or service) still override these defaults — except `ease`/`originEase`, which are only configurable here.
 
 ## Trigger and dialog in separate components
 

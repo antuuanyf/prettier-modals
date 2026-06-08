@@ -61,3 +61,14 @@ The animation is the product — verify it for real, not just unit-mocked. Patte
 ## Publishing
 
 Publish `prettier-modals` first, then `prettier-modals-angular` (it peer-depends on the core). Bump versions together.
+
+For the Angular wrapper, **publish the `ng-packagr` output (`packages/angular/dist`), never the source folder.** Publishing from `packages/angular/` ships raw `src/` with no `module`/`typings`/`exports` and breaks consumers (`TS2307: Cannot find module 'prettier-modals-angular'`). This happened in 0.2.0 and was fixed in 0.2.1.
+
+Use the root scripts (they build then target the right dir):
+
+```bash
+npm run publish:core      # builds + publishes packages/core
+npm run publish:angular   # builds + publishes packages/angular/dist
+```
+
+A `prepublishOnly` guard in `packages/angular/package.json` aborts any accidental `npm publish` from the source folder (ng-packagr strips `scripts` from the dist manifest, so the guard only fires from source).

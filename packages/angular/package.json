@@ -1,6 +1,6 @@
 {
   "name": "prettier-modals-angular",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Angular directives and service for Prettier Modals — beautiful <dialog> animations powered by GSAP Flip.",
   "keywords": [
     "angular",
@@ -21,7 +21,8 @@
   "scripts": {
     "build": "ng-packagr -p ng-package.json",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepublishOnly": "echo '\\nERROR: publish from packages/angular/dist (the ng-packagr output), not from source.\\nRun: npm run build:angular && (cd packages/angular/dist && npm publish)\\n' && exit 1"
   },
   "peerDependencies": {
     "@angular/common": ">=17",

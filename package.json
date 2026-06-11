@@ -13,6 +13,7 @@
     "pack:all": "npm run build:core && npm run build:angular && mkdir -p artifacts && npm pack ./packages/core --pack-destination artifacts && npm pack ./packages/angular/dist --pack-destination artifacts",
     "publish:core": "npm run build:core && npm publish ./packages/core",
     "publish:angular": "npm run build:angular && npm publish ./packages/angular/dist",
+    "demo": "http-server . -p 8080 -c-1 -o /demo/",
     "demo:angular": "npm --prefix demos/angular start",
     "build:demo:angular": "npm --prefix demos/angular run build",
     "test": "npm run test --workspaces --if-present",
